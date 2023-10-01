@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import cors from 'cors';
 import axios from 'axios';
 import lodash from 'lodash';
@@ -71,30 +71,53 @@ const dataAnalytics = (req: CustomRequest, res: Response, next: NextFunction) =>
         req.analytics = analytics;
         next();
     }
+    else{
+        return next("")
+    }
     
    
 };
 
 // Route to fetch blog stats and perform analytics
-app.get('/api/blog-stats', getData,dataAnalytics, (req: CustomRequest, res: Response) => {
+app.get('/api/blog-stats', getData,dataAnalytics, (req: CustomRequest, res: Response,next:NextFunction) => {
     const analytics = req.analytics;
-    res.status(200).json(analytics);
+    if(analytics){
+       return res.status(200).json(analytics);
+    }
+    else{
+        return next("server side problem")
+    }
 });
 
 
 // Routes for Searching 
 app.get('/api/blog-search', getData, (req:CustomRequest, res:Response)=>{
     const blogData = req.blogData?.blogs;
-    const searchQuery :string = req.query.query ? req.query.query?.toString().toLowerCase() : "";
-    const filterBlog:Blog[] = lodash.filter(blogData,(blog)=>{
-        return blog.title.toLowerCase().includes(searchQuery);
-    })
+    const searchQuery =  req.query.query?.toString().toLowerCase();
+    if(blogData && searchQuery){
+        const filterBlog:Blog[] = lodash.filter(blogData,(blog)=>{
+            return blog.title.toLowerCase().includes(searchQuery);
+        })
+       return res.status(200).json(filterBlog);
+    }
+    else{
+        return res.status(400).json({error:"There is a query problem"})
+    }
 })
 
 
 
 
+//default error handler
 
+app.use(((err:Error,req:Request,res:Response,next:NextFunction)=>{
+    if(err.message){
+        return res.status(500).json({error:err.message})
+    }
+    else{
+        return res.status(500).json({error:"There was a server side error"})
+    }
+}) as ErrorRequestHandler);
 
 // Start the Express server
 app.listen(port, () => {
