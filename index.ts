@@ -159,3 +159,10 @@ app.use(((err:Error,req:Request,res:Response,next:NextFunction)=>{
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+
+
+
+// Sorry for not writing the organized code, i could move the function with another file but i don't know how to move types/interface. with declaration true in tsconfig file, it could be solve but then module.export doesn't work. I could find the solution since i was harry to finished the project. 
+
+// Thank Your for time to read this.
