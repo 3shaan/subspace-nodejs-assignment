@@ -8,7 +8,14 @@ const app: express.Application = express();
 
 interface CustomRequest extends Request {
     blogData?: BlogData; 
-    analytics ?:any
+    analytics ?:Analytics
+}
+
+interface Analytics {
+    totalBlogsNumber : number,
+    longerTitlesBlogs : Blog,
+    titleWithPrivacyNumber : number,
+    uniqueTitleBlogs : string[]
 }
 
 interface Blog {
@@ -50,10 +57,10 @@ const dataAnalytics = (req: CustomRequest, res: Response, next: NextFunction) =>
     const blogData = req.blogData?.blogs;
     
     if(blogData){
-        const totalBlogsNumber = blogData.length;
-        const longerTitlesBlogs =  lodash.maxBy(blogData, 'title.length');
-        const titleWithPrivacyNumber = lodash.filter(blogData, blog=>lodash.includes(lodash.toLower(blog.title), "privacy")).length;
-        const uniqueTitleBlogs = lodash.uniqBy(blogData, 'title').map(blog=>blog.title);
+        const totalBlogsNumber :number = blogData.length;
+        const longerTitlesBlogs : Blog=  lodash.maxBy(blogData, 'title.length') || {id:"", title:"", image_url:""};
+        const titleWithPrivacyNumber : number= lodash.filter(blogData, blog=>lodash.includes(lodash.toLower(blog.title), "privacy")).length;
+        const uniqueTitleBlogs :string[] = lodash.uniqBy(blogData, 'title').map(blog=>blog.title);
         console.log(totalBlogsNumber, longerTitlesBlogs, titleWithPrivacyNumber, uniqueTitleBlogs);
         const analytics = {
             totalBlogsNumber,
@@ -62,6 +69,7 @@ const dataAnalytics = (req: CustomRequest, res: Response, next: NextFunction) =>
             uniqueTitleBlogs
         }
         req.analytics = analytics;
+        next();
     }
     
    
@@ -69,8 +77,8 @@ const dataAnalytics = (req: CustomRequest, res: Response, next: NextFunction) =>
 
 // Route to fetch blog stats and perform analytics
 app.get('/api/blog-stats', getData,dataAnalytics, (req: CustomRequest, res: Response) => {
-    // const blogData = req.blogData;
-    res.status(200).json('blogData');
+    const analytics = req.analytics;
+    res.status(200).json(analytics);
 });
 
 // Start the Express server
