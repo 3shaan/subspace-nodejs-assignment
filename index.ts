@@ -132,7 +132,7 @@ app.get('/api/blog-search', getData, (req:CustomRequest, res:Response)=>{
             });
             return filterBlog;
         });
-        console.log(memorizedSearch(blogData, searchQuery));
+        // console.log(memorizedSearch(blogData, searchQuery));
 
        return res.status(200).json(memorizedSearch(blogData, searchQuery));
     }

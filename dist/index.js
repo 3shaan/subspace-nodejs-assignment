@@ -32,7 +32,6 @@ const fetchBlogData = () => __awaiter(void 0, void 0, void 0, function* () {
                 'x-hasura-admin-secret': adminSecret
             }
         });
-        console.log('data');
         return response.data;
     }
     catch (error) {
@@ -99,10 +98,14 @@ app.get('/api/blog-search', getData, (req, res) => {
     const blogData = (_a = req.blogData) === null || _a === void 0 ? void 0 : _a.blogs;
     const searchQuery = (_b = req.query.query) === null || _b === void 0 ? void 0 : _b.toString().toLowerCase();
     if (blogData && searchQuery) {
-        const filterBlog = lodash_1.default.filter(blogData, (blog) => {
-            return blog.title.toLowerCase().includes(searchQuery);
+        const memorizedSearch = lodash_1.default.memoize((blogData, searchQuery) => {
+            const filterBlog = lodash_1.default.filter(blogData, (blog) => {
+                return blog.title.toLowerCase().includes(searchQuery.toLowerCase());
+            });
+            return filterBlog;
         });
-        return res.status(200).json(filterBlog);
+        console.log(memorizedSearch(blogData, searchQuery));
+        return res.status(200).json(memorizedSearch(blogData, searchQuery));
     }
     else {
         return res.status(400).json({ error: "There is a query problem" });
