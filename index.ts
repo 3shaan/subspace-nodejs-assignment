@@ -81,6 +81,21 @@ app.get('/api/blog-stats', getData,dataAnalytics, (req: CustomRequest, res: Resp
     res.status(200).json(analytics);
 });
 
+
+// Routes for Searching 
+app.get('/api/blog-search', getData, (req:CustomRequest, res:Response)=>{
+    const blogData = req.blogData?.blogs;
+    const searchQuery :string = req.query.query ? req.query.query?.toString().toLowerCase() : "";
+    const filterBlog:Blog[] = lodash.filter(blogData,(blog)=>{
+        return blog.title.toLowerCase().includes(searchQuery);
+    })
+})
+
+
+
+
+
+
 // Start the Express server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
