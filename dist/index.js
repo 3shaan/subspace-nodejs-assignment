@@ -21,6 +21,9 @@ const app = (0, express_1.default)();
 // Middleware for JSON parsing and CORS handling
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
+app.get('/', (req, res) => {
+    res.send("Server is running");
+});
 // data fetching function
 const fetchBlogData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -104,7 +107,7 @@ app.get('/api/blog-search', getData, (req, res) => {
             });
             return filterBlog;
         });
-        console.log(memorizedSearch(blogData, searchQuery));
+        // console.log(memorizedSearch(blogData, searchQuery));
         return res.status(200).json(memorizedSearch(blogData, searchQuery));
     }
     else {
@@ -124,3 +127,5 @@ app.use(((err, req, res, next) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+// Sorry for not writing the organized code, i could move the function with another file but i don't know how to move types/interface. with declaration true in tsconfig file, it could be solve but then module.export doesn't work. I could find the solution since i was harry to finished the project. 
+// Thank Your for time to read this.

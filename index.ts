@@ -34,6 +34,11 @@ app.use(cors());
 
 
 
+app.get('/', (req:Request, res:Response)=>{
+    res.send("Server is running")
+})
+
+
 // data fetching function
 
 const fetchBlogData = async ():Promise<BlogData> =>{
